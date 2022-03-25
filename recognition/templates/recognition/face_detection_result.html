@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    /* Three image containers (use 25% for four, and 50% for two, etc) */
+    .column {
+        float: left;
+        width: 33.33%;
+        padding: 5px;
+    }
+
+    /* Clear floats after image containers */
+    .row::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+
+<div class="text-center mt-5">
+    <h1>Face detection</h1>
+    <p class="lead">Upload picture and I will mark all faces on it !</p>
+    <p>Made by Valentyn Cherkasov</p>
+</div>
+<div class="container">
+    <h2 class="text-center">Result</h2>
+    <div class="row text-center">
+        {% if result_image %}
+        <div class="column"><img src="/{{ result_image }}" class="img-fluid">
+            {% else %}
+            <p>It is empty yet.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
