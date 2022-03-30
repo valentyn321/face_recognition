@@ -29,6 +29,7 @@ class ImageDetectionFormView(FormView):
         return reverse("detection-result")
 
     def form_valid(self, form):
+        print(self.request.user)
         image, face_coordinates = Recognizer().picture_face_recognition(
             form.files.get("input_url")
         )
