@@ -5,8 +5,15 @@ name = "pypi"
 
 [packages] 
 django = "*"
+pillow = "*"
+face-recognition = "*"
 
 [dev-packages]
+black = "*"
+pycodestyle = "*"
 
 [requires]
 python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Three image containers (use 25% for four, and 50% for two, etc) */
+    .column {
+        float: left;
+        width: 33.33%;
+        padding: 5px;
+    }
+
+    /* Clear floats after image containers */
+    .row::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+<div class="text-center mt-5">
+    <h1>Face detection</h1>
+    <p class="lead">Upload picture and I will mark all faces on it !</p>
+    <p>Made by Valentyn Cherkasov</p>
+</div>
+<div class="container">
+    <h2 class="text-center mt-5">Add a new picture</h2>
+    <form method="post" enctype="multipart/form-data"> {% csrf_token %}
+        {{ form }}
+        <br>
+        <button class="btn btn-dark my-4" type="submit">Submit</button>
+    </form>
+    {% endblock %}
