@@ -14,4 +14,14 @@ urlpatterns = [
         login_required(recognition_views.detection_result),
         name="detection-result",
     ),
+    path(
+        "comparison/",
+        login_required(recognition_views.ImagesComparingFormView.as_view()),
+        name="face_comparison",
+    ),
+    path(
+        "comparison-result/",
+        login_required(recognition_views.comparison_result),
+        name="comparison-result",
+    ),
 ]
