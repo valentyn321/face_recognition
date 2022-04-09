@@ -38,7 +38,7 @@ class Recognizer:
         )
 
     def compare_two_faces(self, loaded_img1, loaded_img2):
-        
+
         img1_encoding = face_recognition.face_encodings(loaded_img1)[0]
         img2_encoding = face_recognition.face_encodings(loaded_img2)[0]
         result = face_recognition.compare_faces([img1_encoding], img2_encoding)

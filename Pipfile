@@ -7,9 +7,12 @@ name = "pypi"
 django = "*"
 pillow = "*"
 face-recognition = "*"
+djangorestframework = "*"
+markdown = "*"
+django-filter = "*"
+black = "*"
 
 [dev-packages]
-black = "*"
 pycodestyle = "*"
 
 [requires]

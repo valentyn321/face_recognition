@@ -7,9 +7,7 @@ User = settings.AUTH_USER_MODEL
 class Image(models.Model):
     input_url = models.ImageField()
     output_url = models.ImageField(null=True, blank=True)
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE
-    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -19,7 +17,5 @@ class DoubleImageForComparison(models.Model):
     second_input_url = models.ImageField()
     second_output_url = models.ImageField(null=True, blank=True)
     difference = models.BooleanField(default=1)
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE
-    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
