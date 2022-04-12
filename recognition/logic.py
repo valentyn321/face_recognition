@@ -33,8 +33,8 @@ class Recognizer:
         image.save(f"{MEDIA_URL}image_after_processing_{timestamp}.jpg")
 
         return (
-            f"{MEDIA_URL}image_before_processing_{timestamp}.jpg",
-            f"{MEDIA_URL}image_after_processing_{timestamp}.jpg",
+            f"image_before_processing_{timestamp}.jpg",
+            f"image_after_processing_{timestamp}.jpg",
         )
 
     def compare_two_faces(self, loaded_img1, loaded_img2):
