@@ -3,6 +3,7 @@ from face_recognition_project.settings import MEDIA_URL
 from time import time_ns
 
 from PIL import Image, ImageDraw
+from cv2 import cv2
 
 
 class Recognizer:
@@ -44,3 +45,26 @@ class Recognizer:
         result = face_recognition.compare_faces([img1_encoding], img2_encoding)
 
         return result
+
+    def video_detection(self, videopath):
+        input_video = cv2.VideoCapture(videopath)
+        size = (int(input_video.get(3)), int(input_video.get(4)))
+
+        result = cv2.VideoWriter(
+            "filename.mp4",
+            cv2.VideoWriter_fourcc(*"MP4V"),
+            10,
+            size,
+        )
+
+        while True:
+            ret, frame = input_video.read()
+            if not ret:
+                break
+
+            rgb_frame = frame[:, :, ::-1]
+
+            face_locations = face_recognition.face_locations(rgb_frame)
+            for (top, right, bottom, left) in face_locations:
+                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            result.write(frame)

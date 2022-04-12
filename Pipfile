@@ -11,6 +11,7 @@ djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
 black = "*"
+opencv-python = "*"
 
 [dev-packages]
 pycodestyle = "*"
