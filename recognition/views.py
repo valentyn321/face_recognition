@@ -3,8 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from recognition.logic import Recognizer
-from recognition.models import Image, DoubleImageForComparison
-from recognition.serializers import ImageSerializer, DoubleImageForComparisonSerializer
+from recognition.models import Image, DoubleImageForComparison, Video
+from recognition.serializers import (
+    ImageSerializer,
+    DoubleImageForComparisonSerializer,
+    VideoSerializer,
+)
 
 
 class ImageListCreateAPIView(ListCreateAPIView):
@@ -31,7 +35,7 @@ class ImageListCreateAPIView(ListCreateAPIView):
             serializer.save()
 
 
-class ImagesComparingFormView(ListCreateAPIView):
+class ImagesComparingListCreateAPIView(ListCreateAPIView):
     queryset = DoubleImageForComparison.objects.all()
     serializer_class = DoubleImageForComparisonSerializer
 
@@ -70,3 +74,21 @@ class ImagesComparingFormView(ListCreateAPIView):
                 serializer.validated_data["difference"] = True
 
             serializer.save()
+
+
+class VideoListCreateAPIView(ListCreateAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        url = Recognizer().video_detection(
+            serializer.validated_data.get("url", None),
+        )
+        serializer.validated_data["url"] = url
+        serializer.save()

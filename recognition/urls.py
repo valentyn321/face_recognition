@@ -9,7 +9,12 @@ urlpatterns = [
     ),
     path(
         "comparison/",
-        recognition_views.ImagesComparingFormView.as_view(),
+        recognition_views.ImagesComparingListCreateAPIView.as_view(),
         name="face_comparison",
+    ),
+    path(
+        "video-detection/",
+        recognition_views.VideoListCreateAPIView.as_view(),
+        name="video_face_detection",
     ),
 ]

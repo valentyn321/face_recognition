@@ -5,6 +5,8 @@ from time import time_ns
 from PIL import Image, ImageDraw
 from cv2 import cv2
 
+import tempfile
+
 
 class Recognizer:
     def picture_face_recognition(self, image_path):
@@ -39,7 +41,9 @@ class Recognizer:
         )
 
     def compare_two_faces(self, loaded_img1, loaded_img2):
-
+        """
+        Returns result based on comparison result
+        """
         img1_encoding = face_recognition.face_encodings(loaded_img1)[0]
         img2_encoding = face_recognition.face_encodings(loaded_img2)[0]
         result = face_recognition.compare_faces([img1_encoding], img2_encoding)
@@ -47,24 +51,34 @@ class Recognizer:
         return result
 
     def video_detection(self, videopath):
-        input_video = cv2.VideoCapture(videopath)
-        size = (int(input_video.get(3)), int(input_video.get(4)))
+        """
+        Saves only resulted video
+        """
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(videopath.file.read())
 
-        result = cv2.VideoWriter(
-            "filename.mp4",
-            cv2.VideoWriter_fourcc(*"MP4V"),
-            10,
-            size,
-        )
+            timestamp = time_ns() * 100
+            input_video = cv2.VideoCapture(temp.name)
+            size = (int(input_video.get(3)), int(input_video.get(4)))
 
-        while True:
-            ret, frame = input_video.read()
-            if not ret:
-                break
+            result = cv2.VideoWriter(
+                f"{MEDIA_URL}result_{timestamp}.mp4",
+                cv2.VideoWriter_fourcc(*"MP4V"),
+                20.0,
+                size,
+            )
 
-            rgb_frame = frame[:, :, ::-1]
+            while True:
+                ret, frame = input_video.read()
 
-            face_locations = face_recognition.face_locations(rgb_frame)
-            for (top, right, bottom, left) in face_locations:
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-            result.write(frame)
+                if not ret:
+                    break
+
+                rgb_frame = frame[:, :, ::-1]
+
+                face_locations = face_recognition.face_locations(rgb_frame)
+                for (top, right, bottom, left) in face_locations:
+                    cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+                result.write(frame)
+
+            return f"result_{timestamp}.mp4"
