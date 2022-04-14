@@ -1,6 +1,6 @@
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 
 from recognition.logic import Recognizer
 from recognition.models import Image, DoubleImageForComparison, Video
@@ -14,6 +14,7 @@ from recognition.serializers import (
 class ImageListCreateAPIView(ListCreateAPIView):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -39,6 +40,7 @@ class ImageListCreateAPIView(ListCreateAPIView):
 class ImagesComparingListCreateAPIView(ListCreateAPIView):
     queryset = DoubleImageForComparison.objects.all()
     serializer_class = DoubleImageForComparisonSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -80,6 +82,7 @@ class ImagesComparingListCreateAPIView(ListCreateAPIView):
 class VideoListCreateAPIView(ListCreateAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

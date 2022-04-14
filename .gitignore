@@ -90,3 +90,6 @@ db.sqlite3
 
 # Media files
 media/
+
+.pytest_cache
+.vscode

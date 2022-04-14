@@ -12,6 +12,7 @@ markdown = "*"
 django-filter = "*"
 black = "*"
 opencv-python = "*"
+djoser = "*"
 
 [dev-packages]
 pycodestyle = "*"
