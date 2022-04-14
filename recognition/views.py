@@ -32,6 +32,7 @@ class ImageListCreateAPIView(ListCreateAPIView):
             )
             serializer.validated_data["input_url"] = input_url
             serializer.validated_data["output_url"] = output_url
+            serializer.validated_data["faces_presence"] = 1
             serializer.save()
 
 
