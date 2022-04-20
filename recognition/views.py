@@ -29,13 +29,17 @@ class ImageListCreateAPIView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
-        image, face_coordinates = Recognizer().picture_face_recognition(
+        recognizer_obj = Recognizer()
+        image, face_coordinates = recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("input_url", None)
         )
         if face_coordinates:
-            input_url, output_url = Recognizer().mark_faces(
+            image_with_rectangles_on_faces = recognizer_obj.mark_faces_on_image(
                 image,
                 face_coordinates,
+            )
+            input_url, output_url = recognizer_obj.upload_pair_of_pictures_to_s3(
+                image, image_with_rectangles_on_faces
             )
             serializer.validated_data["input_url"] = input_url
             serializer.validated_data["output_url"] = output_url
@@ -66,21 +70,30 @@ class ImagesComparingListCreateAPIView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
-        image1, face_coordinates1 = Recognizer().picture_face_recognition(
+        recognizer_obj = Recognizer()
+        image1, face_coordinates1 = recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("first_input_url")
         )
-        image2, face_coordinates2 = Recognizer().picture_face_recognition(
+        image2, face_coordinates2 = recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("second_input_url")
         )
 
         if all([face_coordinates1, face_coordinates2]):
-            input_url1, output_url1 = Recognizer().mark_faces(
+
+            image1_with_rectangles_on_faces = recognizer_obj.mark_faces_on_image(
                 image1,
                 face_coordinates1,
             )
-            input_url2, output_url2 = Recognizer().mark_faces(
+            image2_with_rectangles_on_faces = recognizer_obj.mark_faces_on_image(
                 image2,
                 face_coordinates2,
+            )
+
+            input_url1, output_url1 = recognizer_obj.upload_pair_of_pictures_to_s3(
+                image1, image1_with_rectangles_on_faces
+            )
+            input_url2, output_url2 = recognizer_obj.upload_pair_of_pictures_to_s3(
+                image2, image2_with_rectangles_on_faces
             )
 
             serializer.validated_data["first_input_url"] = input_url1

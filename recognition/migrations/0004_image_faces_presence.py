@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recognition', '0003_video'),
+        ("recognition", "0003_video"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='image',
-            name='faces_presence',
+            model_name="image",
+            name="faces_presence",
             field=models.BooleanField(default=0),
         ),
     ]

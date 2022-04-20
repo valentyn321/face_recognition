@@ -13,9 +13,12 @@ django-filter = "*"
 black = "*"
 opencv-python = "*"
 djoser = "*"
+django-storages = "*"
+boto3 = "*"
 
 [dev-packages]
 pycodestyle = "*"
+black = "*"
 
 [requires]
 python_version = "3.9"
