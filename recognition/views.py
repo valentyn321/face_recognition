@@ -15,6 +15,10 @@ class ImageListCreateAPIView(ListCreateAPIView):
     serializer_class = ImageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.recognizer_obj = Recognizer()
+
     def get_queryset(self):
         return Image.objects.filter(author=self.request.user.id)
 
@@ -34,11 +38,11 @@ class ImageListCreateAPIView(ListCreateAPIView):
             serializer.validated_data.get("input_url", None)
         )
         if face_coordinates:
-            image_with_rectangles_on_faces = recognizer_obj.mark_faces_on_image(
+            image_with_rectangles_on_faces = self.recognizer_obj.mark_faces_on_image(
                 image,
                 face_coordinates,
             )
-            input_url, output_url = recognizer_obj.upload_pair_of_pictures_to_s3(
+            input_url, output_url = self.recognizer_obj.upload_pair_of_pictures_to_s3(
                 image, image_with_rectangles_on_faces
             )
             serializer.validated_data["input_url"] = input_url
@@ -60,6 +64,10 @@ class ImagesComparingListCreateAPIView(ListCreateAPIView):
     serializer_class = DoubleImageForComparisonSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.recognizer_obj = Recognizer()
+
     def get_queryset(self):
         return Image.objects.filter(author=self.request.user.id)
 
@@ -70,29 +78,28 @@ class ImagesComparingListCreateAPIView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
-        recognizer_obj = Recognizer()
-        image1, face_coordinates1 = recognizer_obj.picture_face_recognition(
+        image1, face_coordinates1 = self.recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("first_input_url")
         )
-        image2, face_coordinates2 = recognizer_obj.picture_face_recognition(
+        image2, face_coordinates2 = self.recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("second_input_url")
         )
 
         if all([face_coordinates1, face_coordinates2]):
 
-            image1_with_rectangles_on_faces = recognizer_obj.mark_faces_on_image(
+            image1_with_rectangles_on_faces = self.recognizer_obj.mark_faces_on_image(
                 image1,
                 face_coordinates1,
             )
-            image2_with_rectangles_on_faces = recognizer_obj.mark_faces_on_image(
+            image2_with_rectangles_on_faces = self.recognizer_obj.mark_faces_on_image(
                 image2,
                 face_coordinates2,
             )
 
-            input_url1, output_url1 = recognizer_obj.upload_pair_of_pictures_to_s3(
+            input_url1, output_url1 = self.recognizer_obj.upload_pair_of_pictures_to_s3(
                 image1, image1_with_rectangles_on_faces
             )
-            input_url2, output_url2 = recognizer_obj.upload_pair_of_pictures_to_s3(
+            input_url2, output_url2 = self.recognizer_obj.upload_pair_of_pictures_to_s3(
                 image2, image2_with_rectangles_on_faces
             )
 
@@ -113,6 +120,10 @@ class VideoListCreateAPIView(ListCreateAPIView):
     serializer_class = VideoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.recognizer_obj = Recognizer()
+
     def get_queryset(self):
         return Image.objects.filter(author=self.request.user.id)
 
@@ -123,8 +134,10 @@ class VideoListCreateAPIView(ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
-        url = Recognizer().video_detection(
+        url = self.recognizer_obj.video_detection(
             serializer.validated_data.get("url", None),
         )
+        self.recognizer_obj.video_upload_and_cleanup(url)
+
         serializer.validated_data["url"] = url
         serializer.save()

@@ -2,6 +2,7 @@ import boto3
 import face_recognition
 from numpy import ndarray
 import io
+import os
 
 
 from face_recognition_project.settings import AWS_STORAGE_BUCKET_NAME
@@ -132,19 +133,21 @@ class Recognizer:
         Input:
             path to video for processing
         Output:
-            path to s3 bucket with processed video
+            path to local processed video
         """
-        with tempfile.NamedTemporaryFile() as temp:
-            temp.write(videopath.file.read())
+        timestamp = time_ns()
+        with tempfile.NamedTemporaryFile(suffix=".mp4") as input_video:
+            input_video.write(videopath.file.read())
 
-            timestamp = time_ns() * 100
-            input_video = cv2.VideoCapture(temp.name)
+            input_video = cv2.VideoCapture(input_video.name)
+            fourcc = cv2.VideoWriter_fourcc(*"MP4V")
+            fps = input_video.get(5)
             size = (int(input_video.get(3)), int(input_video.get(4)))
 
             result = cv2.VideoWriter(
                 f"result_{timestamp}.mp4",
-                cv2.VideoWriter_fourcc(*"MP4V"),
-                20.0,
+                fourcc,
+                fps,
                 size,
             )
 
@@ -161,4 +164,13 @@ class Recognizer:
                     cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
                 result.write(frame)
 
-            return f"result_{timestamp}.mp4"
+        return f"result_{timestamp}.mp4"
+
+    def video_upload_and_cleanup(self, url: str) -> None:
+        self.boto_client.upload_file(
+            url,
+            AWS_STORAGE_BUCKET_NAME,
+            f"media/{url}",
+        )
+
+        os.remove(url)

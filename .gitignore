@@ -92,4 +92,4 @@ db.sqlite3
 media/
 
 .pytest_cache
-.vscode
+
