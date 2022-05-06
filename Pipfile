@@ -15,6 +15,7 @@ opencv-python = "*"
 djoser = "*"
 django-storages = "*"
 boto3 = "*"
+pytest = "*"
 
 [dev-packages]
 pycodestyle = "*"

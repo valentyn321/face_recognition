@@ -6,6 +6,7 @@ import os
 
 
 from face_recognition_project.settings import AWS_STORAGE_BUCKET_NAME
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image, ImageDraw
 from cv2 import cv2
@@ -40,17 +41,20 @@ class Recognizer:
 
     boto_client = boto3.client("s3", region_name="eu-central-1")
 
-    def picture_face_recognition(self, image_path: str) -> tuple:
+    def picture_face_recognition(self, in_memory_image: InMemoryUploadedFile) -> tuple:
         """
         Input:
-            image_path (path to the file, which func need to processed)
+            in_memory_image - in memory uploaded file
         Output:
             Tuple with loaded image and face coordinates (if they are)
         """
-        image = face_recognition.load_image_file(image_path)
-        face_locations = face_recognition.face_locations(image)
-        if face_locations:
-            return (image, face_locations)
+        if type(in_memory_image) == InMemoryUploadedFile:
+            image = face_recognition.load_image_file(in_memory_image)
+            face_locations = face_recognition.face_locations(image)
+            if face_locations:
+                return (image, face_locations)
+            return "There is no faces on this image!"
+        return "You have not inserted an InMemoryUploadedFile!"
 
     def mark_faces_on_image(
         self, loaded_image: ndarray, face_coordinates: list
@@ -122,11 +126,16 @@ class Recognizer:
         Output:
             Result of comparison
         """
-        img1_encoding = face_recognition.face_encodings(loaded_img1)[0]
-        img2_encoding = face_recognition.face_encodings(loaded_img2)[0]
-        result = face_recognition.compare_faces([img1_encoding], img2_encoding)
-
-        return result
+        try:
+            breakpoint()
+            img1_encoding = face_recognition.face_encodings(loaded_img1)[0]
+            img2_encoding = face_recognition.face_encodings(loaded_img2)[0]
+            result = face_recognition.compare_faces([img1_encoding], img2_encoding)
+            return result
+        except TypeError:
+            return "Not empty ndarrays should be inputs of this function!"
+        except IndexError:
+            return "Not empty ndarrays should be inputs of this function!"
 
     def video_detection(self, videopath: str) -> str:
         """
