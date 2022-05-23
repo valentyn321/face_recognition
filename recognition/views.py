@@ -25,14 +25,10 @@ class ImageListCreateAPIView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if not self.validate_author(serializer.validated_data["author"]):
-            return Response(
-                "You cannot create objects for another user!", status.HTTP_403_FORBIDDEN
-            )
-        self.perform_create(serializer)
+        self.perform_create(serializer=serializer, author=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer, author):
         recognizer_obj = Recognizer()
         image, face_coordinates = recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("input_url", None)
@@ -47,17 +43,9 @@ class ImageListCreateAPIView(ListCreateAPIView):
             )
             serializer.validated_data["input_url"] = input_url
             serializer.validated_data["output_url"] = output_url
+            serializer.validated_data["author"] = author
             serializer.validated_data["faces_presence"] = 1
             serializer.save()
-
-    def validate_author(self, author, *args, **kwargs):
-        """
-        This fucntion is here, because we need some data from the request
-        """
-        if self.request.user == author:
-            return True
-        else:
-            return False
 
 
 class ImagesComparingListCreateAPIView(ListCreateAPIView):
@@ -74,10 +62,10 @@ class ImagesComparingListCreateAPIView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        self.perform_create(serializer, request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer, author):
         image1, face_coordinates1 = self.recognizer_obj.picture_face_recognition(
             serializer.validated_data.get("first_input_url")
         )
@@ -107,6 +95,7 @@ class ImagesComparingListCreateAPIView(ListCreateAPIView):
             serializer.validated_data["second_input_url"] = input_url2
             serializer.validated_data["first_output_url"] = output_url1
             serializer.validated_data["second_output_url"] = output_url2
+            serializer.validated_data["author"] = author
 
             if Recognizer().compare_two_faces(image1, image2)[0]:
                 serializer.validated_data["difference"] = False
@@ -130,14 +119,15 @@ class VideoListCreateAPIView(ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        self.perform_create(serializer, request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer, author):
         url = self.recognizer_obj.video_detection(
             serializer.validated_data.get("url", None),
         )
         self.recognizer_obj.video_upload_and_cleanup(url)
 
         serializer.validated_data["url"] = url
+        serializer.validated_data["author"] = author
         serializer.save()
