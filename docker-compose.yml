@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - USE_S3=${USE_S3}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
+      - DEBUG=1

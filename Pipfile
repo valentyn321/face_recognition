@@ -11,11 +11,12 @@ djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
 black = "*"
-opencv-python = "*"
 djoser = "*"
 django-storages = "*"
 boto3 = "*"
 pytest = "*"
+uwsgi = "*"
+opencv-python = "*"
 
 [dev-packages]
 pycodestyle = "*"
