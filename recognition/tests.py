@@ -2,7 +2,7 @@ from unittest import result
 import pytest
 import sys
 
-from recognition.logic import Recognizer
+from recognition.face_recognition_logic import Recognizer
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
