@@ -1,18 +1,42 @@
-version: '3.7'
+version: '3.8'
 
 services:
-  app:
+  web:
     build:
       context: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./:/app
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    command: gunicorn --bind 0.0.0.0:8000 face_recognition_project.wsgi --workers=1
     environment:
       - SECRET_KEY=${SECRET_KEY}
       - USE_S3=${USE_S3}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
-      - DEBUG=1
+      - DEBUG=0
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    networks:
+      - django-network
+
+  nginx:
+    build: nginx
+    restart: always
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8080:8080"
+    depends_on:
+      - web
+    networks:
+      - django-network
+
+networks:
+  django-network:
+    name: django-network
+
+volumes:
+  media_volume:
+  static_volume:

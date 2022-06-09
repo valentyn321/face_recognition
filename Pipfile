@@ -15,8 +15,8 @@ djoser = "*"
 django-storages = "*"
 boto3 = "*"
 pytest = "*"
-uwsgi = "*"
 opencv-python = "*"
+gunicorn = "*"
 
 [dev-packages]
 pycodestyle = "*"
